@@ -1,26 +1,18 @@
 import connectWithDatabase from './config/connectDTB';
 // src/app.ts
-const express = require('express');
+import express from 'express';
+import morgan from 'morgan';
+import userRoutes from './routes/user';
+
 const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
-const swaggerUi = require('swagger-ui-express');
-import userRoutes from './routes/user';
 
 require('dotenv').config();
 connectWithDatabase();
-mongoose.connection.on('error', (err) => {
-    console.error('Lỗi kết nối đến cơ sở dữ liệu:', err);
-});
+mongoose.connection.on('error', (error: Error) => console.log(error));
 
-// Xử lý sự kiện khi mất kết nối
-mongoose.connection.on('disconnected', () => {
-    console.log('Mất kết nối đến cơ sở dữ liệu');
-});
-
-const swaggerSpecs = require('./config/swagger'); // Đường dẫn đến tệp cấu hình Swagger
-app.use('/v1', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-
+app.use(morgan('common'));
 app.get('/v1/', userRoutes);
 
 app.listen(port, () => {
