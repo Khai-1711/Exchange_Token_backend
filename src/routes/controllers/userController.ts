@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import Users, { IUser } from '../../models/users';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 // Register routes
@@ -63,7 +64,17 @@ export const login = async (req: Request, res: Response) => {
             const isPasswordValid: string = await bcrypt.compare(passwd, user.passwd);
 
             if (isPasswordValid) {
-                res.status(200).json({ message: 'Đăng nhập thành công' });
+                const ac = jwt.sign(
+                    {
+                        id: user.id,
+                        username: user.username,
+                    },
+                    process.env.MY_SEC_KEY,
+                    { expiresIn: '30s' },
+                );
+                const a = { ...user.toObject() };
+                delete a.passwd;
+                return res.status(200).json({ user: a, ac });
             }
         }
         return res.status(400).json({ message: 'Tên người dùng hoặc mật khẩu không đúng' });
