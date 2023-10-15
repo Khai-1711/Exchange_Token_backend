@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import { registerUser, getAllUser, findUserByName, login } from './controllers/userController';
+import { registerUser, getAllUser, findUserByName, login, requestRefreshToken } from './controllers/userController';
 import { accessVerifyToken } from '../middleware/jwtToken';
 
 const router = express();
@@ -11,5 +11,7 @@ router.post('/register', registerUser);
 router.get('/users', accessVerifyToken, getAllUser);
 // FIND USER BY NAME
 router.get('/users/:username', findUserByName);
+// REFRESH TOKEN
+router.post('/refreshToken', requestRefreshToken);
 
 export default router;
